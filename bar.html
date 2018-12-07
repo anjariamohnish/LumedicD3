@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <script src="d3.v5.min.js"></script>
+    <style>
+        svg rect {
+            fill: orange;
+        }
+
+        .bar-chart {
+            background-color: #C7D9D9;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr('width', window)
+            .attr('height', screen.height)
+
+
+        // var horizontalBar = svg.append('g')
+        //     .append('rect')
+        //     .attr('width', 0)
+        //     .attr('height', 30)
+
+
+        var verticalBar = svg.append('g')
+            .append('rect')
+            .attr('width', 30)
+            .attr('height', 0)
+        // .attr()
+
+        // horizontalBar.transition().attr('width', 300).duration(1500)
+        verticalBar.transition().attr('height', 200).duration(1500)
+
+    </script>
+
+</body>
+
+</html>
