@@ -1,0 +1,130 @@
+<html>
+
+<head>
+    <script src="d3.v5.min.js"></script>
+</head>
+
+<body>
+    <script>
+
+        var dataset = [
+            { name: '4', percent: 39.10 },
+            { name: '22', percent: 32.51 },
+            { name: '$45.5', percent: 13.68 },
+        ];
+
+
+        var w = 300, h = 300;
+
+        var outerRadius = w / 2;
+        var innerRadius = 80;
+
+
+        var pie = d3.pie()
+            .value((d) => { return d.percent })
+            .sort(null)
+        //.padAngle(.03);
+
+        var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        var arc = d3.arc()
+            .outerRadius(outerRadius)
+            .innerRadius(innerRadius);
+
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr('width', w)
+            .attr('height', h)
+            .append('g')
+            .attr('transform', 'translate(' + w / 2 + ',' + h / 2 + ')');
+
+
+        var path = svg.selectAll('path')
+            .data(pie(dataset))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', (d, i) => { return color(d.data.name); })
+
+
+
+        var centroid = [];
+
+
+        var texts = d3.select('g')
+            .selectAll('text')
+            .data(pie(dataset))
+            .enter()
+            .append('text')
+            .each((d) => {
+                centroid.push(arc.centroid(d));
+            })
+            .attr('x', (d, i) => { return centroid[i][0] })
+            .attr('y', (d, i) => { return centroid[i][1] })
+            // .attr('dy', '0.35em')
+            .text((d) => { return d.data.name })
+            .attr('fill', 'white')
+
+
+
+        path.transition()
+            .duration(1000)
+            .attrTween('d', (d) => {
+                var interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+                return (t) => {
+                    return arc(interpolate(t));
+                };
+            });
+
+
+
+        function update() {
+            path.data([]).exit().remove();
+            texts.data([]).exit().remove();
+
+            path = svg.selectAll('path')
+                .data(pie(dataset))
+                .enter()
+                .append('path')
+                .attr('d', arc)
+                .attr('fill', (d, i) => { return color(d.data.name); })
+
+
+            centroid = [];
+            texts = d3.select('g')
+                .selectAll('text')
+                .data(pie(dataset))
+                .enter()
+                .append('text')
+                .each((d) => {
+                    centroid.push(arc.centroid(d));
+                })
+                .attr('x', (d, i) => { return centroid[i][0] })
+                .attr('y', (d, i) => { return centroid[i][1] })
+                // .attr('dy', '0.35em')
+                .text((d) => { return d.data.name })
+                .attr('fill', 'white')
+
+            console.log(pie(dataset))
+        }
+
+        // setTimeout(() => {
+        //     dataset.pop();
+        //     update();
+        // }, 2000)
+
+
+        // setTimeout(() => {
+        //     dataset.push({ name: '5', percent: 5 })
+        //     dataset.push({ name: '345', percent: 15 })
+        //     dataset.push({ name: '4f5', percent: 15 })
+        //     update();
+        // }, 4000)
+
+
+    </script>
+
+</body>
+
+</html>
