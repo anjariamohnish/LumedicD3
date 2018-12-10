@@ -11,6 +11,7 @@ export class BarComponent implements OnInit, OnChanges {
 
   horizontalBar: any;
   linearScale: any;
+  componentId: string;
 
   @Input() width: number;
   @Input() color: string;
@@ -18,7 +19,10 @@ export class BarComponent implements OnInit, OnChanges {
   constructor() { }
 
   ngOnInit() {
-    const svg = d3.select('#moh')
+    this.componentId = this.generateId();
+    document.getElementById('bar').setAttribute('id', this.componentId);
+
+    const svg = d3.select('#' + this.componentId)
       .attr('width', '100%')
       .attr('height', '100%');
 
@@ -49,5 +53,15 @@ export class BarComponent implements OnInit, OnChanges {
     if (this.horizontalBar && changes['width'].currentValue) {
       this.horizontalBar.transition().attr('width', this.linearScale(this.width)).duration(800);
     }
+  }
+
+
+  generateId() {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    for (let i = 0; i < 7; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
   }
 }
