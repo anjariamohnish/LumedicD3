@@ -13,6 +13,7 @@ export class BarComponent implements OnInit, OnChanges {
   linearScale: any;
 
   @Input() width: number;
+  @Input() color: string;
 
   constructor() { }
 
@@ -25,12 +26,19 @@ export class BarComponent implements OnInit, OnChanges {
       .domain([0, 100])
       .range([0, svg.style('width')]);
 
-
     this.horizontalBar = svg.append('g')
       .append('rect')
       .attr('width', 0)
       .attr('height', '100%')
-      .attr('fill', 'orange');
+      .attr('fill', this.color);
+
+
+    // svg.select('g')
+    //   .append('text')
+    //   .attr('x', 50)
+    //   .attr('y', 20)
+    //   .style('fill', 'white')
+    //   .text('45.2');
 
     if (this.width) {
       this.horizontalBar.transition().attr('width', this.linearScale(this.width)).duration(800);

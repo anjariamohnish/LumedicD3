@@ -8,10 +8,12 @@ import { Component, OnInit } from '@angular/core';
 export class AppComponent implements OnInit {
 
   width: number;
+  color: string;
 
   constructor() { }
 
   ngOnInit() {
+    this.color = 'green';
     // this.width = 30;
   }
 
