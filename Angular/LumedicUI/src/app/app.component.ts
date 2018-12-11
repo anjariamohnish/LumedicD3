@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
 
 
   add() {
-    this.dataset.push({ name: '4', percent: 40 });
+    this.dataset.push({ name: '4', percent: 10 });
     this.dataset = this.dataset.slice();
   }
 }

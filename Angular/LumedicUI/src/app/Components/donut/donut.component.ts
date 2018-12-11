@@ -1,5 +1,6 @@
 import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
 import * as d3 from 'd3';
+import WatchJS from 'melanke-watchjs';
 
 @Component({
     selector: 'app-donut',
@@ -14,12 +15,14 @@ export class DonutComponent implements OnInit, OnChanges {
     pie: any;
     arc: any;
     color: any;
+    watch: any;
 
     @Input() dataset: Array<any>;
 
-    constructor() { }
+    constructor() { this.watch = WatchJS.watch; }
 
     ngOnInit() {
+        // this.watch(this.dataset, this.getChanges);
         this.componentId = this.generateId();
         document.getElementById('donut').setAttribute('id', this.componentId);
         this.draw();
@@ -56,12 +59,11 @@ export class DonutComponent implements OnInit, OnChanges {
 
 
         this.path = this.svg.selectAll('path')
-            .data(this.pie(this.dataset))
+            .data(this.pie(this.generateDataSet(this.dataset)))
             .enter()
             .append('path')
             .attr('d', this.arc)
-            .attr('fill', (d, i) => this.color(d.data.name));
-
+            .attr('fill', (d, i) => d.data.name !== 'dummy' ? this.color(d.data.name) : '#F8F8F8');
         // const centroid = [];
 
         // const texts = d3.select('g')
@@ -98,13 +100,27 @@ export class DonutComponent implements OnInit, OnChanges {
         this.path.data([]).exit().remove();
         // this.texts.data([]).exit().remove();
 
+        const newDataset = this.pie(this.generateDataSet(this.dataset));
+        const lastNodeIndex = newDataset[newDataset.length - 2].index;
+
         this.path = this.svg.selectAll('path')
-            .data(this.pie(this.dataset))
+            .data(this.pie(this.generateDataSet(this.dataset)))
             .enter()
             .append('path')
             .attr('d', this.arc)
-            .attr('fill', (d, i) => this.color(d.data.name));
+            .attr('fill', (d, i) => d.data.name !== 'dummy' ? this.color(d.data.name) : '#F8F8F8');
 
+        this.path.transition()
+            .duration(1000)
+            .attrTween('d', (d) => {
+                if (d.index === lastNodeIndex) {
+                    const i = d3.interpolate(d.startAngle, d.endAngle);
+                    return (t) => {
+                        d.endAngle = i(t);
+                        return this.arc(d);
+                    };
+                }
+            });
 
         // centroid = [];
         // texts = d3.select('g')
@@ -122,6 +138,33 @@ export class DonutComponent implements OnInit, OnChanges {
         //     .attr('fill', 'white')
 
         // console.log(pie(dataset))
+    }
+
+    getChanges(index, action, newvalue, oldvalue) {
+        console.log('index', index);
+        console.log('action', action);
+        console.log('newvalue', newvalue);
+        console.log('oldvalue', oldvalue);
+    }
+
+    generateDataSet(dataset: Array<any>) {
+        let dummyIndex = -1;
+        dataset.forEach((data, index) => {
+            if (data.name === 'dummy') {
+                dummyIndex = index;
+            }
+        });
+        if (dummyIndex !== -1) {
+            dataset.splice(dummyIndex, 1);
+        }
+        let totalPercent = 0;
+        dataset.forEach(data => {
+            totalPercent += data.percent;
+        });
+        if (totalPercent < 100) {
+            dataset.push({ name: 'dummy', percent: 100 - totalPercent });
+        }
+        return dataset;
     }
 
     generateId() {
