@@ -14,13 +14,18 @@ export class AppComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.color = 'green';
+    // this.color = 'green';
     this.dataset = [
-      { name: '4', percent: 39.10 },
-      { name: '22', percent: 32.51 },
-      { name: '$45.5', percent: 13.68 },
+      { name: '1', percent: 20 },
+      { name: '2', percent: 20 },
+      { name: '3', percent: 20 },
     ];
     // this.width = 30;
   }
 
+
+  add() {
+    this.dataset.push({ name: '4', percent: 40 });
+    this.dataset = this.dataset.slice();
+  }
 }

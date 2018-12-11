@@ -9,6 +9,11 @@ import * as d3 from 'd3';
 export class DonutComponent implements OnInit, OnChanges {
 
     componentId: string;
+    path: any;
+    svg: any;
+    pie: any;
+    arc: any;
+    color: any;
 
     @Input() dataset: Array<any>;
 
@@ -21,45 +26,43 @@ export class DonutComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-
+        if (changes['dataset'] && changes['dataset'].previousValue !== undefined) {
+            this.update();
+        }
     }
 
 
     draw() {
         const parentEl = document.getElementById(this.componentId).parentNode.parentElement;
-
         const w = parentEl.clientWidth, h = parentEl.clientHeight;
         const outerRadius = Math.min(h / 2, w / 3.5) - 5;
         const innerRadius = outerRadius / 1.3;
-        const pie = d3.pie()
+        this.pie = d3.pie()
             .value((d) => d.percent)
             .sort(null);
         // .padAngle(.03);
 
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
+        this.color = d3.scaleOrdinal(d3.schemeCategory10);
 
-        const arc = d3.arc()
+        this.arc = d3.arc()
             .outerRadius(outerRadius)
             .innerRadius(innerRadius);
 
-        const svg = d3.select('svg')
+        this.svg = d3.select('#' + this.componentId)
             .attr('width', w)
             .attr('height', h)
             .append('g')
             .attr('transform', 'translate(' + w / 2 + ',' + h / 2 + ')');
 
 
-        const path = svg.selectAll('path')
-            .data(pie(this.dataset))
+        this.path = this.svg.selectAll('path')
+            .data(this.pie(this.dataset))
             .enter()
             .append('path')
-            .attr('d', arc)
-            .attr('fill', (d, i) => color(d.data.name));
-
-
+            .attr('d', this.arc)
+            .attr('fill', (d, i) => this.color(d.data.name));
 
         // const centroid = [];
-
 
         // const texts = d3.select('g')
         //     .selectAll('text')
@@ -78,16 +81,47 @@ export class DonutComponent implements OnInit, OnChanges {
 
 
 
-        path.transition()
+        this.path.transition()
             .duration(1000)
             .attrTween('d', (d) => {
                 const interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
                 return (t) => {
-                    return arc(interpolate(t));
+                    return this.arc(interpolate(t));
                 };
             });
 
 
+    }
+
+
+    update() {
+        this.path.data([]).exit().remove();
+        // this.texts.data([]).exit().remove();
+
+        this.path = this.svg.selectAll('path')
+            .data(this.pie(this.dataset))
+            .enter()
+            .append('path')
+            .attr('d', this.arc)
+            .attr('fill', (d, i) => this.color(d.data.name));
+
+
+        // centroid = [];
+        // texts = d3.select('g')
+        //     .selectAll('text')
+        //     .data(pie(dataset))
+        //     .enter()
+        //     .append('text')
+        //     .each((d) => {
+        //         centroid.push(arc.centroid(d));
+        //     })
+        //     .attr('x', (d, i) => { return centroid[i][0] })
+        //     .attr('y', (d, i) => { return centroid[i][1] })
+        //     // .attr('dy', '0.35em')
+        //     .text((d) => { return d.data.name })
+        //     .attr('fill', 'white')
+
+        // console.log(pie(dataset))
     }
 
     generateId() {
