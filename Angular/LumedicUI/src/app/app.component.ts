@@ -10,6 +10,7 @@ export class AppComponent implements OnInit {
   width: number;
   color: string;
   dataset: Array<any>;
+  dataset2: Array<any>;
 
   constructor() { }
 
@@ -20,12 +21,25 @@ export class AppComponent implements OnInit {
       { name: '2', percent: 20 },
       { name: '3', percent: 20 },
     ];
+    this.dataset2 = [20, 30, 40];
     // this.width = 30;
   }
 
 
   add() {
-    this.dataset.push({ name: '4', percent: 10 });
-    this.dataset = this.dataset.slice();
+    this.dataset2.push(50);
+    // this.dataset.push({ name: '4', percent: 10 });
+    this.dataset2 = this.dataset2.slice();
+  }
+
+  remove() {
+    this.dataset2.pop();
+    // this.dataset.pop();
+    this.dataset2 = this.dataset2.slice();
+  }
+  update() {
+    this.dataset2[2] = 10;
+    // this.dataset[3] = { name: '3', percent: 15 };
+    this.dataset2 = this.dataset2.slice();
   }
 }

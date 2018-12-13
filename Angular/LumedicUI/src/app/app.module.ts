@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { BarComponent } from './Components/bar/bar.component';
 import { DonutComponent } from './Components/donut/donut.component';
+import { Donut2Component } from './Components/donut2/donut2.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BarComponent,
-    DonutComponent
+    DonutComponent,
+    Donut2Component
   ],
   imports: [
     BrowserModule,
