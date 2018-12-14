@@ -16,9 +16,12 @@ export class Donut2Component implements OnInit, OnChanges {
     pie: any;
     arc: any;
     color: any;
+    g: any;
     enterAntiClockwise: any;
 
     @Input() dataset: Array<any>;
+    @Input() text: string;
+    @Input() subText: string;
 
     constructor() { }
 
@@ -61,17 +64,30 @@ export class Donut2Component implements OnInit, OnChanges {
 
         this.svg = d3.select('#' + this.componentId)
             .attr('width', w)
-            .attr('height', h)
-            .append('g')
+            .attr('height', h);
+
+        this.g = this.svg.append('g')
             .attr('transform', 'translate(' + w / 2 + ',' + h / 2 + ')');
 
 
-        this.path = this.svg.selectAll('path')
+        this.path = this.g.selectAll('path')
             .data(this.pie(this.dataset))
             .enter().append('path')
             .attr('fill', (d, i) => this.color(i))
             .attr('d', this.arc)
             .each(function (d) { this._current = d; });
+
+        this.g.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '1.5em')
+            .attr('y', 3)
+            .text(this.text);
+
+        this.g.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '0.8em')
+            .attr('y', 20)
+            .text(this.subText);
 
     }
 

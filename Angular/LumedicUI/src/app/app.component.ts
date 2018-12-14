@@ -11,6 +11,8 @@ export class AppComponent implements OnInit {
   color: string;
   dataset: Array<any>;
   dataset2: Array<any>;
+  donutText: string;
+  subText: string;
 
   constructor() { }
 
@@ -22,6 +24,8 @@ export class AppComponent implements OnInit {
       { name: '3', percent: 20 },
     ];
     this.dataset2 = [20, 30, 40];
+    this.donutText = '650';
+    this.subText = 'PreAuth';
     // this.width = 30;
   }
 
