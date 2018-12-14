@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
-// import * as d3 from 'd3';
-declare var d3: any;
+import * as d3 from 'd3';
+// declare var d3: any;
 
 @Component({
     selector: 'app-donut2',
@@ -48,14 +48,14 @@ export class Donut2Component implements OnInit, OnChanges {
         const innerRadius = outerRadius / 1.3;
 
 
-        this.pie = d3.layout.pie()
+        this.pie = d3.pie()
             // .value((d) => d.percent)
             .sort(null);
         // .padAngle(.03);
 
-        this.color = d3.scale.category20();
+        this.color = d3.scaleOrdinal(d3.schemeCategory10);
 
-        this.arc = d3.svg.arc()
+        this.arc = d3.arc()
             .outerRadius(outerRadius)
             .innerRadius(innerRadius);
 
@@ -73,6 +73,15 @@ export class Donut2Component implements OnInit, OnChanges {
             .attr('d', this.arc)
             .each(function (d) { this._current = d; });
 
+
+        this.path.transition() // init transition
+            .duration(1000)
+            .attrTween('d', (d) => {
+                const interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+                return (t) => {
+                    return this.arc(interpolate(t));
+                };
+            });
     }
 
 
@@ -108,6 +117,7 @@ export class Donut2Component implements OnInit, OnChanges {
             const i = d3.interpolate(this._current, d);
             this._current = i(0);
             return (t) => {
+                console.log(i(t));
                 return Donut2Component.donut.arc(i(t));
             };
         });
