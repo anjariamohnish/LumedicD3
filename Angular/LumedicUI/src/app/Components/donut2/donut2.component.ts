@@ -1,7 +1,5 @@
 import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
 // import * as d3 from 'd3';
-import WatchJS from 'melanke-watchjs';
-
 declare var d3: any;
 
 @Component({
@@ -11,18 +9,16 @@ declare var d3: any;
 })
 export class Donut2Component implements OnInit, OnChanges {
 
+    public static donut: any;
     componentId: string;
     path: any;
     svg: any;
     pie: any;
     arc: any;
     color: any;
-    _current: any;
     enterAntiClockwise: any;
 
     @Input() dataset: Array<any>;
-
-
 
     constructor() { }
 
@@ -30,6 +26,7 @@ export class Donut2Component implements OnInit, OnChanges {
         this.componentId = this.generateId();
         document.getElementById('donut').setAttribute('id', this.componentId);
         this.draw();
+        Donut2Component.donut = this;
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -74,56 +71,47 @@ export class Donut2Component implements OnInit, OnChanges {
             .enter().append('path')
             .attr('fill', (d, i) => this.color(i))
             .attr('d', this.arc)
-            .each((d) => { this._current = d; });
+            .each(function (d) { this._current = d; });
 
     }
 
 
     change() {
-        this.path = this.path.data(this.pie(this.dataset)); // update the data
-        console.log(this.pie(this.dataset));
-        // set the start and end angles to Math.PI * 2 so we can transition
-        // anticlockwise to the actual values later
+        this.path = this.path.data(this.pie(this.dataset));
         this.path.enter().append('path')
             .attr('fill', (d, i) => {
                 return this.color(i);
             })
             .attr('d', this.arc(this.enterAntiClockwise))
-            .each((d) => {
+            .each(function (d) {
                 this._current = {
                     data: d.data,
                     value: d.value,
-                    startAngle: this.enterAntiClockwise.startAngle,
-                    endAngle: this.enterAntiClockwise.endAngle
+                    startAngle: Math.PI * 2,
+                    endAngle: Math.PI * 2
                 };
-            }); // store the initial values
+            });
 
         this.path.exit()
             .transition()
             .duration(750)
-            .attrTween('d', (d) => this.arcTweenOut(d))
+            .attrTween('d', function (d) {
+                const i = d3.interpolate(this._current, { startAngle: Math.PI * 2, endAngle: Math.PI * 2, value: 0 });
+                this._current = i(0);
+                return (t) => {
+                    return Donut2Component.donut.arc(i(t));
+                };
+            })
             .remove();
 
-        this.path.transition().duration(750).attrTween('d', (d) => this.arcTween(d)); // redraw the arcs
+        this.path.transition().duration(750).attrTween('d', function (d) {
+            const i = d3.interpolate(this._current, d);
+            this._current = i(0);
+            return (t) => {
+                return Donut2Component.donut.arc(i(t));
+            };
+        });
 
-    }
-    arcTween(a) {
-        console.log(this._current);
-        console.log(a);
-        const i = d3.interpolate(this._current, a);
-        this._current = i(0);
-        return (t) => {
-            return this.arc(i(t));
-        };
-    }
-    arcTweenOut(a) {
-        console.log(this._current);
-        console.log(a);
-        const i = d3.interpolate(this._current, { startAngle: Math.PI * 2, endAngle: Math.PI * 2, value: 0 });
-        this._current = i(0);
-        return (t) => {
-            return this.arc(i(t));
-        };
     }
 
     generateDataSet(dataset: Array<any>) {
