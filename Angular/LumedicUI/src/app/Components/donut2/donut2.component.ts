@@ -89,6 +89,15 @@ export class Donut2Component implements OnInit, OnChanges {
             .attr('y', 20)
             .text(this.subText);
 
+        this.path.transition() // init transition
+            .duration(1000)
+            .attrTween('d', (d) => {
+                const interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+                return (t) => {
+                    return this.arc(interpolate(t));
+                };
+            });
+
     }
 
 
