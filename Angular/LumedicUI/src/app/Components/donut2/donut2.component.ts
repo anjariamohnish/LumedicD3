@@ -69,10 +69,10 @@ export class Donut2Component implements OnInit, OnChanges {
         this.path = this.svg.selectAll('path')
             .data(this.pie(this.dataset))
             .enter().append('path')
+            .attr('class', this.componentId)
             .attr('fill', (d, i) => this.color(i))
             .attr('d', this.arc)
             .each(function (d) { this._current = d; });
-
 
         this.path.transition() // init transition
             .duration(1000)
@@ -82,15 +82,14 @@ export class Donut2Component implements OnInit, OnChanges {
                     return this.arc(interpolate(t));
                 };
             });
+        console.log(this.path);
     }
 
 
     change() {
         this.path = this.path.data(this.pie(this.dataset));
         this.path.enter().append('path')
-            .attr('fill', (d, i) => {
-                return this.color(i);
-            })
+            .attr('fill', (d, i) => this.color(i))
             .attr('d', this.arc(this.enterAntiClockwise))
             .each(function (d) {
                 this._current = {
@@ -117,7 +116,6 @@ export class Donut2Component implements OnInit, OnChanges {
             const i = d3.interpolate(this._current, d);
             this._current = i(0);
             return (t) => {
-                console.log(i(t));
                 return Donut2Component.donut.arc(i(t));
             };
         });
