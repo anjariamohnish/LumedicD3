@@ -52,18 +52,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "LumedicUI:build"
+            "browserTarget": "LumuUI:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "LumedicUI:build:production"
+              "browserTarget": "LumuUI:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "LumedicUI:build"
+            "browserTarget": "LumuUI:build"
           }
         },
         "test": {
@@ -97,7 +97,7 @@
         }
       }
     },
-    "LumedicUI-e2e": {
+    "LumuUI-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -105,11 +105,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "LumedicUI:serve"
+            "devServerTarget": "LumuUI:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "LumedicUI:serve:production"
+              "devServerTarget": "LumuUI:serve:production"
             }
           }
         },
@@ -125,5 +125,5 @@
       }
     }
   },
-  "defaultProject": "LumedicUI"
+  "defaultProject": "LumuUI"
 }
